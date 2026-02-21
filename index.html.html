@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Destino — Figura de Edición Limitada</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gold: #c9a84c;
+    --gold-dim: rgba(201,168,76,0.4);
+    --crimson: #8b2020;
+    --cream: #e8dcc8;
+    --cream-dim: rgba(232,220,200,0.7);
+    --bg: #05050d;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Cormorant Garamond', serif;
+    overflow-x: hidden;
+  }
+
+  #star-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  section { position: relative; z-index: 1; }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 24px;
+    position: relative;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 80%, rgba(139,32,32,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 50% 20%, rgba(201,168,76,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--crimson);
+    font-size: 0.6rem;
+    letter-spacing: 7px;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    opacity: 0.9;
+    animation: fadeUp 1.2s ease both;
+  }
+
+  .hero-title {
+    font-family: 'UnifrakturMaguntia', cursive;
+    font-size: clamp(5rem, 18vw, 11rem);
+    color: var(--cream);
+    line-height: 0.9;
+    text-shadow: 0 0 60px rgba(201,168,76,0.35), 0 0 120px rgba(201,168,76,0.12);
+    animation: fadeUp 1.2s 0.2s ease both, goldGlow 4s 1.5s ease-in-out infinite alternate;
+    margin-bottom: 20px;
+  }
+
+  @keyframes goldGlow {
+    from { text-shadow: 0 0 40px rgba(201,168,76,0.25), 0 0 80px rgba(201,168,76,0.08); }
+    to   { text-shadow: 0 0 70px rgba(201,168,76,0.55), 0 0 140px rgba(201,168,76,0.2); }
+  }
+
+  .hero-sub {
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--gold);
+    font-size: 0.55rem;
+    letter-spacing: 8px;
+    text-transform: uppercase;
+    margin-bottom: 48px;
+    opacity: 0.7;
+    animation: fadeUp 1.2s 0.4s ease both;
+  }
+
+  .hero-divider {
+    width: 220px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 0 auto 48px;
+    animation: fadeUp 1.2s 0.5s ease both;
+  }
+
+  .hero-scroll {
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--gold-dim);
+    font-size: 0.5rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    animation: fadeUp 1.2s 0.8s ease both, pulse 2.5s 2s ease-in-out infinite;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; transform: translateY(0); }
+    50% { opacity: 0.9; transform: translateY(6px); }
+  }
+
+  /* Corner ornaments */
+  .hero-corner {
+    position: absolute;
+    width: 70px; height: 70px;
+    border-color: var(--gold);
+    border-style: solid;
+    opacity: 0.3;
+    animation: fadeIn 2s ease both;
+  }
+  .hero-corner.tl { top: 28px; left: 28px; border-width: 1px 0 0 1px; }
+  .hero-corner.tr { top: 28px; right: 28px; border-width: 1px 1px 0 0; }
+  .hero-corner.bl { bottom: 28px; left: 28px; border-width: 0 0 1px 1px; }
+  .hero-corner.br { bottom: 28px; right: 28px; border-width: 0 1px 1px 0; }
+
+  /* ─── STORY ─── */
+  .story {
+    padding: 100px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .story-tag {
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--crimson);
+    font-size: 0.55rem;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .story-tag::before, .story-tag::after {
+    content: '';
+    width: 40px; height: 1px;
+    background: var(--crimson);
+    opacity: 0.6;
+  }
+
+  .story-title {
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--cream);
+    font-size: clamp(1.2rem, 4vw, 1.8rem);
+    text-align: center;
+    margin-bottom: 60px;
+    font-weight: 400;
+    letter-spacing: 2px;
+  }
+
+  .story-body {
+    max-width: 680px;
+    width: 100%;
+    position: relative;
+  }
+
+  .story-body::before {
+    content: '';
+    position: absolute;
+    left: -28px; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, transparent, var(--crimson) 20%, var(--gold) 50%, var(--crimson) 80%, transparent);
+    opacity: 0.5;
+  }
+
+  .story-body p {
+    font-size: clamp(1.05rem, 2.5vw, 1.25rem);
+    line-height: 2;
+    color: var(--cream-dim);
+    margin-bottom: 24px;
+    padding-left: 16px;
+  }
+
+  .story-body p.highlight {
+    color: var(--cream);
+    font-style: italic;
+    font-size: clamp(1.1rem, 2.8vw, 1.35rem);
+    border-left: 2px solid var(--gold);
+    padding-left: 20px;
+    margin-left: -2px;
+  }
+
+  .story-body .dialogue {
+    font-style: italic;
+    color: var(--cream);
+    font-size: clamp(1.1rem, 2.8vw, 1.3rem);
+  }
+
+  .story-body .final-line {
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--gold);
+    font-size: clamp(0.75rem, 2vw, 0.9rem);
+    letter-spacing: 3px;
+    text-align: center;
+    margin-top: 48px;
+    opacity: 0.8;
+    padding-left: 0;
+  }
+
+  /* ─── FIGURE DETAILS ─── */
+  .details-section {
+    padding: 80px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px;
+    max-width: 720px;
+    width: 100%;
+    border: 1px solid var(--gold-dim);
+    background: var(--gold-dim);
+  }
+
+  .detail-card {
+    background: var(--bg);
+    padding: 32px 24px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .detail-card .dc-label {
+    font-family: 'Cinzel Decorative', serif;
+    color: rgba(201,168,76,0.45);
+    font-size: 0.45rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  .detail-card .dc-value {
+    color: var(--cream);
+    font-size: 1.1rem;
+    font-style: italic;
+  }
+
+  /* ─── BUY ─── */
+  .buy-section {
+    padding: 100px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 28px;
+    position: relative;
+  }
+
+  .buy-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: min(600px, 90%);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .buy-eyebrow {
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--crimson);
+    font-size: 0.55rem;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+  }
+
+  .buy-title {
+    font-family: 'UnifrakturMaguntia', cursive;
+    font-size: clamp(3rem, 10vw, 5rem);
+    color: var(--gold);
+    text-shadow: 0 0 40px rgba(201,168,76,0.4);
+    line-height: 1;
+  }
+
+  .buy-desc {
+    max-width: 480px;
+    color: var(--cream-dim);
+    font-size: 1.1rem;
+    line-height: 1.8;
+    font-style: italic;
+  }
+
+  .buy-btn {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 16px 48px;
+    border: 1px solid var(--gold);
+    background: rgba(201,168,76,0.07);
+    color: var(--gold);
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.65rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+  }
+  .buy-btn:hover { background: var(--gold); color: var(--bg); }
+
+  .buy-note {
+    color: rgba(232,220,200,0.35);
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+
+  /* ─── MODAL ─── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.88);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: #0c0c16;
+    border: 1px solid var(--gold-dim);
+    padding: 48px 40px;
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+  }
+  .modal::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .modal h2 {
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--gold);
+    font-size: 0.9rem;
+    letter-spacing: 4px;
+    margin-bottom: 14px;
+  }
+
+  .modal p {
+    color: var(--cream-dim);
+    font-size: 1rem;
+    line-height: 1.7;
+    font-style: italic;
+    margin-bottom: 32px;
+  }
+
+  .modal-options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+
+  .modal-link {
+    display: block;
+    padding: 14px 24px;
+    border: 1px solid rgba(201,168,76,0.3);
+    background: rgba(201,168,76,0.04);
+    color: var(--cream);
+    text-decoration: none;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    transition: background 0.3s;
+  }
+  .modal-link:hover { background: rgba(201,168,76,0.1); }
+  .modal-link span {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    color: rgba(232,220,200,0.45);
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    text-transform: none;
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  .modal-close {
+    background: none; border: none;
+    color: rgba(201,168,76,0.35);
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.5rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+  .modal-close:hover { color: var(--gold); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    padding: 40px 24px;
+    text-align: center;
+    border-top: 1px solid rgba(201,168,76,0.1);
+    position: relative; z-index: 1;
+  }
+  footer p {
+    font-family: 'Cinzel Decorative', serif;
+    color: rgba(201,168,76,0.25);
+    font-size: 0.45rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 0.3; }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<canvas id="star-canvas"></canvas>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-corner tl"></div>
+  <div class="hero-corner tr"></div>
+  <div class="hero-corner bl"></div>
+  <div class="hero-corner br"></div>
+
+  <div class="hero-eyebrow">✦ Edición Limitada · Hecha a mano · 1 de 1 ✦</div>
+  <div class="hero-title">Destino</div>
+  <div class="hero-sub">— Figura de colección —</div>
+  <div class="hero-divider"></div>
+  <a class="hero-scroll" href="#historia">↓ descubrir la historia ↓</a>
+</section>
+
+<!-- HISTORIA -->
+<section class="story" id="historia">
+  <div class="story-tag reveal">El origen</div>
+  <div class="story-title reveal">La noche que el cielo se profundizó</div>
+
+  <div class="story-body">
+    <p class="reveal">El viento olía a ozono y a lluvia lejana. Xayah alzó la barbilla, sus orejas temblando ante el brillo de las tres estrellas del cinturón de Orión.</p>
+
+    <p class="dialogue reveal">—Tal vez —susurró, con esa voz que solo los gatos y la noche pueden oír—, si las vemos al mismo tiempo, nos estaremos viendo a los ojos.</p>
+
+    <p class="reveal">Rakan iba a burlarse, iba a decir que las estrellas son rocas frías y lejanas. Pero las palabras se le congelaron en la garganta.</p>
+
+    <p class="highlight reveal">El cielo no se oscureció; se profundizó. Las nubes se partieron como cortinas de terciopelo viejo. Y allí, descendiendo sin aletear, como si cayera hacia arriba, apareció Él.</p>
+
+    <p class="reveal">No era fuego lo que lo rodeaba, era sombra pura. Escamas del color del vacío entre galaxias. Era siniestro, sí, con una belleza que dolía mirar. Pero cuando sus ojos —dos soles dorados y verticales— se posaron en los dos gatitos, no hubo hambre en ellos.</p>
+
+    <p class="highlight reveal">Solo hubo... expectativa.</p>
+
+    <p class="reveal">El Dragón se enrolló en el aire, inmenso, abarcando todo el tejado. No rugió. Solo esperó. Rakan sintió un tirón en el pecho, como si un hilo de oro lo hubiera cosido a Xayah. El Dragón parpadeó lentamente.</p>
+
+    <p class="dialogue reveal">Eso es todo, pareció decir su silencio. He visto el voto. Ahora, cumplidlo.</p>
+
+    <div class="final-line reveal">✦ &nbsp; &nbsp; ✦ &nbsp; &nbsp; ✦</div>
+  </div>
+</section>
+
+<!-- DETALLES -->
+<section class="details-section">
+  <div class="details-grid reveal">
+    <div class="detail-card">
+      <div class="dc-label">Figura</div>
+      <div class="dc-value">Escultura artesanal</div>
+    </div>
+    <div class="detail-card">
+      <div class="dc-label">Edición</div>
+      <div class="dc-value">Limitada · 1 / 1</div>
+    </div>
+    <div class="detail-card">
+      <div class="dc-label">Incluye</div>
+      <div class="dc-value">Caja exclusiva</div>
+    </div>
+    <div class="detail-card">
+      <div class="dc-label">Precio</div>
+      <div class="dc-value">A consultar</div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPRA -->
+<section class="buy-section" id="comprar">
+  <div class="buy-eyebrow reveal">✦ Preventa abierta ✦</div>
+  <div class="buy-title reveal">Destino</div>
+  <div class="buy-desc reveal">
+    No existe otra igual. No existirá otra igual.<br>
+    Si te llama, es tuya. Si dudas... quizás otro la encuentre primero.
+  </div>
+  <button class="buy-btn reveal" onclick="document.getElementById('modal').classList.add('active')">
+    ✦ Quiero adquirirla ✦
+  </button>
+  <div class="buy-note reveal">Cupos limitados · Sin segunda ronda de producción</div>
+</section>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2>Contacto</h2>
+    <p>Para adquirir "Destino" o consultar el precio,<br>escríbeme directamente:</p>
+    <div class="modal-options">
+      <a class="modal-link" href="https://instagram.com/" target="_blank">
+        Instagram
+        <span>Envíame un DM — respondo rápido 🖤</span>
+      </a>
+      <a class="modal-link" href="https://wa.me/" target="_blank">
+        WhatsApp
+        <span>Escríbeme para coordinar</span>
+      </a>
+    </div>
+    <button class="modal-close" onclick="document.getElementById('modal').classList.remove('active')">✕ Cerrar</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>Destino · Figura artesanal de edición limitada · Hecha a mano</p>
+</footer>
+
+<script>
+// ─── CANVAS STARS ───
+const canvas = document.getElementById('star-canvas');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const stars = Array.from({length: 260}, () => ({
+  x: Math.random(),
+  y: Math.random(),
+  r: Math.random() * 1.4 + 0.2,
+  alpha: Math.random() * 0.55 + 0.15,
+  speed: Math.random() * 0.018 + 0.004,
+  offset: Math.random() * Math.PI * 2
+}));
+
+const sparkles = Array.from({length: 22}, () => ({
+  x: Math.random(),
+  y: Math.random(),
+  size: Math.random() * 5 + 2.5,
+  alpha: Math.random() * 0.45 + 0.15,
+  speed: Math.random() * 0.012 + 0.004,
+  offset: Math.random() * Math.PI * 2
+}));
+
+// Constelaciones (posiciones relativas 0-1)
+const constellations = [
+  { cx: 0.1, cy: 0.15, pts: [[0,0],[0.04,-0.02],[0.07,0.01],[0.05,0.05],[0.01,0.05]], conn: [[0,1],[1,2],[2,3],[3,4],[4,0],[1,3]] },
+  { cx: 0.82, cy: 0.25, pts: [[0,0],[0.05,0.02],[0.08,-0.01],[0.09,0.04],[0.04,0.07]], conn: [[0,1],[1,2],[2,3],[3,4],[4,1]] },
+  { cx: 0.05, cy: 0.6, pts:  [[0,0],[0.04,0.015],[0.07,-0.01],[0.06,0.04],[0.02,0.05]], conn: [[0,1],[1,2],[2,3],[3,4],[4,0]] },
+  { cx: 0.88, cy: 0.7, pts:  [[0,0],[0.03,-0.03],[0.06,0],[0.05,0.04],[0.01,0.04],[-0.02,0.01]], conn: [[0,1],[1,2],[2,3],[3,4],[4,5],[5,0]] },
+  { cx: 0.45, cy: 0.05, pts: [[0,0],[0.05,0.01],[0.03,0.04],[-0.01,0.03],[0.04,-0.03]], conn: [[0,1],[1,2],[2,3],[3,0],[0,4],[4,1]] },
+];
+
+function drawSparkle(x, y, size, alpha) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.strokeStyle = '#c9a84c';
+  ctx.lineWidth = 0.7;
+  ctx.beginPath();
+  ctx.moveTo(x, y - size); ctx.lineTo(x, y + size);
+  ctx.moveTo(x - size, y); ctx.lineTo(x + size, y);
+  ctx.moveTo(x - size*0.35, y - size*0.35); ctx.lineTo(x + size*0.35, y + size*0.35);
+  ctx.moveTo(x + size*0.35, y - size*0.35); ctx.lineTo(x - size*0.35, y + size*0.35);
+  ctx.stroke();
+  ctx.restore();
+}
+
+let frame = 0;
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  frame++;
+  const W = canvas.width, H = canvas.height;
+
+  stars.forEach(s => {
+    const a = s.alpha * (0.55 + 0.45 * Math.sin(frame * s.speed + s.offset));
+    ctx.beginPath();
+    ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${a})`;
+    ctx.fill();
+  });
+
+  sparkles.forEach(s => {
+    const a = s.alpha * (0.4 + 0.6 * Math.sin(frame * s.speed + s.offset));
+    drawSparkle(s.x * W, s.y * H, s.size, a);
+  });
+
+  constellations.forEach(con => {
+    const pts = con.pts.map(([dx, dy]) => [(con.cx + dx) * W, (con.cy + dy) * H]);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(201,168,76,0.15)';
+    ctx.lineWidth = 0.8;
+    con.conn.forEach(([a, b]) => {
+      ctx.beginPath();
+      ctx.moveTo(pts[a][0], pts[a][1]);
+      ctx.lineTo(pts[b][0], pts[b][1]);
+      ctx.stroke();
+    });
+    pts.forEach(([x, y]) => {
+      ctx.beginPath();
+      ctx.arc(x, y, 1.6, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(201,168,76,0.55)';
+      ctx.fill();
+    });
+    ctx.restore();
+  });
+
+  requestAnimationFrame(draw);
+}
+draw();
+
+// ─── SCROLL REVEAL ───
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.15 });
+revealEls.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
